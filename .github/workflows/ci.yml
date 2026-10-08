@@ -1,0 +1,26 @@
+# Checks every pull request and push to main using the shared workflows in
+# picklemypaddle-infra (SCRUM-13). No image yet: the agents have nothing to run
+# on staging until the approval dashboard exists.
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  checks:
+    uses: thehunfromoz/picklemypaddle-infra/.github/workflows/node-checks.yml@main
+    with:
+      scripts: typecheck test build start
+
+  secrets:
+    uses: thehunfromoz/picklemypaddle-infra/.github/workflows/secret-scan.yml@main
